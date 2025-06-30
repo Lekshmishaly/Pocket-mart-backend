@@ -17,6 +17,11 @@ app.use(
   })
 );
 
+// Add root route
+app.get("/", (req, res) => {
+  res.send("Welcome to pocketmart.store API!");
+});
+
 const MONGO_URI = process.env.DATABASE_ORGIN;
 // Connect to MongoDB
 mongoose
@@ -34,7 +39,7 @@ const adminRoute = require("./routes/adminRoutes");
 const addressModel = require("./Models/addressModel");
 app.use("/admin", adminRoute);
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 8001;
 
 app.listen(PORT, () => {
   console.log(`This app is running on http://localhost:${PORT}`);
