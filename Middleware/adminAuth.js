@@ -46,8 +46,8 @@ const jwtVerification = async (req, res, next) => {
 
       res.cookie("adminAccessToken", newAccessToken, {
         httpOnly: true,
-        secure: false,
-        sameSite: "Strict",
+        secure: true,
+        sameSite: "None",
         maxAge: 15 * 60 * 1000,
       });
 

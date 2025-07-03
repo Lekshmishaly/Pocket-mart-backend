@@ -86,30 +86,83 @@ adminRoute.patch(
 );
 
 //Order controller routes
-
-adminRoute.get("/order", orderController.fetchOrder);
-adminRoute.put("/order/status", orderController.changeStatus);
-adminRoute.patch("/return/response", orderController.respondToReturnRequest);
+adminRoute.get("/order", adminAuth.jwtVerification, orderController.fetchOrder);
+adminRoute.put(
+  "/order/status",
+  adminAuth.jwtVerification,
+  orderController.changeStatus
+);
+adminRoute.patch(
+  "/return/response",
+  adminAuth.jwtVerification,
+  orderController.respondToReturnRequest
+);
 
 //Offer controller routes
-
-adminRoute.post("/product/offer", offerController.productOffer);
-adminRoute.get("/offer/product", offerController.fetchProductOffer);
-adminRoute.delete("/offer", offerController.removeProductOffer);
-adminRoute.post("/category/offer", offerController.categoryOffer);
-adminRoute.get("/offer/category", offerController.fetchCategoryOffer);
+adminRoute.post(
+  "/product/offer",
+  adminAuth.jwtVerification,
+  offerController.productOffer
+);
+adminRoute.get(
+  "/offer/product",
+  adminAuth.jwtVerification,
+  offerController.fetchProductOffer
+);
+adminRoute.delete(
+  "/offer",
+  adminAuth.jwtVerification,
+  offerController.removeProductOffer
+);
+adminRoute.post(
+  "/category/offer",
+  adminAuth.jwtVerification,
+  offerController.categoryOffer
+);
+adminRoute.get(
+  "/offer/category",
+  adminAuth.jwtVerification,
+  offerController.fetchCategoryOffer
+);
 
 //Coupon controller routes
-
-adminRoute.post("/coupon", couponController.addCoupon);
-adminRoute.get("/coupons", couponController.fetchCoupons);
-adminRoute.delete("/coupon", couponController.deleteCoupon);
+adminRoute.post(
+  "/coupon",
+  adminAuth.jwtVerification,
+  couponController.addCoupon
+);
+adminRoute.get(
+  "/coupons",
+  adminAuth.jwtVerification,
+  couponController.fetchCoupons
+);
+adminRoute.delete(
+  "/coupon",
+  adminAuth.jwtVerification,
+  couponController.deleteCoupon
+);
 
 //sales report Controller routes
-adminRoute.get("/sales", salesController.fetchSalesReport);
-adminRoute.get("/sales/download/pdf", salesController.dowloadSalesPDF);
-adminRoute.get("/sales/download/excel", salesController.downloadSalesExcel);
+adminRoute.get(
+  "/sales",
+  adminAuth.jwtVerification,
+  salesController.fetchSalesReport
+);
+adminRoute.get(
+  "/sales/download/pdf",
+  adminAuth.jwtVerification,
+  salesController.dowloadSalesPDF
+);
+adminRoute.get(
+  "/sales/download/excel",
+  adminAuth.jwtVerification,
+  salesController.downloadSalesExcel
+);
 
 //dashboard Controller routes
-adminRoute.get("/dashboard", dashboardController.fetchDashboardData);
+adminRoute.get(
+  "/dashboard",
+  adminAuth.jwtVerification,
+  dashboardController.fetchDashboardData
+);
 module.exports = adminRoute;

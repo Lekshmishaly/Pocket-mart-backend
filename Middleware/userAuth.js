@@ -1,3 +1,4 @@
+const jwt = require("jsonwebtoken");
 require("dotenv").config();
 const otpSchema = require("../Models/otpModel");
 const User = require("../Models/userModel");
@@ -35,7 +36,8 @@ async function verifyOtp(req, res, next) {
   }
 }
 
-// jwt Verification
+//////////////////////////////////////////////////// jwt Verification ////////////////////////////////////////////////////////////
+
 async function jwtVerification(req, res, next) {
   try {
     const accessToken = req.cookies.accessToken;
@@ -76,8 +78,8 @@ async function jwtVerification(req, res, next) {
 
       res.cookie("accessToken", newAccessToken, {
         httpOnly: true,
-        secure: false,
-        sameSite: "Strict",
+        secure: true,
+        sameSite: "None",
         maxAge: 15 * 60 * 1000,
       });
 

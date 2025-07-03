@@ -6,11 +6,31 @@ async function addReview(req, res) {
   try {
     const { userId, productId, rating, review } = req.body;
 
+    // Validation
+    if (!userId || !productId) {
+      return res.status(400).json({
+        success: false,
+        message: "User ID and Product ID are required.",
+      });
+    }
+
+    if (!rating || rating < 1 || rating > 5) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Rating must be between 1 and 5." });
+    }
+
+    if (!review || review.trim() === "") {
+      return res
+        .status(400)
+        .json({ success: false, message: "Review comment is required." });
+    }
+
     const reviewDetails = new Reviews({
       user: userId,
       product: productId,
       rating,
-      comment: review,
+      comment: review.trim(),
     });
 
     const reviewAdded = await reviewDetails.save();
@@ -18,17 +38,18 @@ async function addReview(req, res) {
     if (!reviewAdded) {
       return res
         .status(401)
-        .json({ success: false, message: "Unble to add your Review" });
+        .json({ success: false, message: "Unable to add your review." });
     }
 
-    return res
-      .status(200)
-      .json({ success: true, message: "Your review is added Successfully" });
+    return res.status(200).json({
+      success: true,
+      message: "Your review is added successfully.",
+    });
   } catch (error) {
     console.error("Error in Review Adding:", error);
     return res.status(500).json({
       success: false,
-      message: "An error occurred while Adding the Review",
+      message: "An error occurred while adding the review.",
     });
   }
 }

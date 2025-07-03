@@ -14,7 +14,9 @@ const reviewsSchema = new mongoose.Schema(
     },
     comment: {
       type: String,
-      required: true,
+      required: [true, "Review comment is required"],
+      trim: true,
+      minlength: [1, "Comment cannot be empty"],
     },
     rating: { type: Number, required: true, min: 1, max: 5 },
   },

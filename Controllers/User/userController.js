@@ -113,15 +113,15 @@ async function userLogin(req, res) {
 
       res.cookie("accessToken", accessToken, {
         httpOnly: true,
-        secure: false,
-        sameSite: "Strict",
+        secure: true,
+        sameSite: "None",
         maxAge: 15 * 60 * 1000, // 15 minutes expiration for access token
       });
 
       res.cookie("refreshToken", refreshToken, {
         httpOnly: true,
-        secure: false,
-        sameSite: "Strict",
+        secure: true,
+        sameSite: "None",
         maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days expiration for refresh token
       });
       return res.status(200).json({
@@ -149,40 +149,52 @@ async function userLogin(req, res) {
 async function googleAuth(req, res) {
   try {
     const { sub, name, email } = req.body;
-    const userData = await User.findOne({ email });
+    let userData = await User.findOne({ email });
 
     if (userData) {
-      if (userData.googleId && userData.googleId == sub) {
-        return res
-          .status(200)
-          .json({ success: true, message: "Login Successful", userData });
-      } else if (userData.googleId && userData.googleId != sub) {
+      if (userData.googleId && userData.googleId !== sub) {
         return res
           .status(401)
           .json({ success: false, message: "Unauthorized User" });
-      } else if (!userData.googleId || userData.googleId === "") {
+      }
+
+      if (!userData.googleId || userData.googleId === "") {
         userData.googleId = sub;
         await userData.save();
-
-        return res.status(200).json({
-          success: true,
-          message: "Login Successful,Welcome Back",
-          userData,
-        });
       }
     } else {
       const newUser = new User({
-        name: name,
-        email: email,
+        name,
+        email,
         googleId: sub,
       });
-      const userData = await newUser.save();
-      return res.status(201).json({
-        success: true,
-        message: "You are Registered, Welcome to Pocket Mart",
-        userData,
-      });
+      userData = await newUser.save();
     }
+
+    // ✅ Generate tokens
+    const accessToken = generateAccessToken(userData._id);
+    const refreshToken = generateRefreshToken(userData._id);
+
+    // ✅ Set cookies
+    res.cookie("accessToken", accessToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "None",
+      maxAge: 15 * 60 * 1000, // 15 minutes
+    });
+
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "None",
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Login Successful",
+      userData,
+    });
   } catch (err) {
     console.log(err);
     return res.status(500).json({ success: false, message: "Server Error" });

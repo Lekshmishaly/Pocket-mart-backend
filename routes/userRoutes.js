@@ -13,7 +13,7 @@ const wishlistController = require("../Controllers/User/wishlistController");
 const walletController = require("../Controllers/User/walletController");
 const offerController = require("../Controllers/User/offerController");
 const couponController = require("../Controllers/User/couponController");
-
+const paymentController = require("../Controllers/User/paymentController");
 // Rate limiter to prevent abuse
 const resetPasswordLimiter = rateLimit({
   windowMs: 1 * 60 * 1000, // 1 minute
@@ -25,7 +25,7 @@ const resetPasswordLimiter = rateLimit({
 userRoute.post("/sendotp", userController.sendOtp);
 userRoute.post("/signup", userAuth.verifyOtp, userController.createUser);
 userRoute.post("/login", userController.userLogin);
-userRoute.patch("/logout", userController.logout);
+userRoute.patch("/logout", userAuth.jwtVerification, userController.logout);
 
 userRoute.post(
   "/forget-password",
@@ -37,7 +37,7 @@ userRoute.post("/verify-otp", userAuth.verifyOtp, (req, res) => {
   res.status(200).json({ success: true, message: "OTP verified successfully" });
 });
 
-userRoute.put("/edit", userController.editUser);
+userRoute.put("/edit", userAuth.jwtVerification, userController.editUser);
 
 userRoute.post(
   "/reset-password",
@@ -46,9 +46,18 @@ userRoute.post(
 );
 
 userRoute.post("/googleAuth", userController.googleAuth);
-userRoute.put("/changepassword", userController.changePassword);
-userRoute.post("/referral", userController.referral);
-userRoute.patch("/referal/skip", userController.skipReferral);
+userRoute.put(
+  "/changepassword",
+
+  userController.changePassword
+);
+userRoute.post("/referral", userAuth.jwtVerification, userController.referral);
+userRoute.patch(
+  "/referal/skip",
+  userAuth.jwtVerification,
+
+  userController.skipReferral
+);
 
 //Product controller routes
 userRoute.get("/product/home/:limit", productController.fetchProductsHome);
@@ -61,31 +70,103 @@ userRoute.get("/fetchingproduct/:id", productController.fetchProduct);
 userRoute.get("/fetchSize/:id", productController.fetchSize);
 
 //Adress controller routes
-userRoute.post("/address", addressController.addAddress);
-userRoute.get("/addresses/:userId", addressController.fetchAddress);
-userRoute.delete("/address/:id", addressController.deleteAddress);
-userRoute.put("/address/edit", addressController.editAddress);
+userRoute.post(
+  "/address",
+  userAuth.jwtVerification,
+  addressController.addAddress
+);
+userRoute.get(
+  "/addresses/:userId",
+
+  addressController.fetchAddress
+);
+userRoute.delete(
+  "/address/:id",
+  userAuth.jwtVerification,
+  addressController.deleteAddress
+);
+userRoute.put(
+  "/address/edit",
+  userAuth.jwtVerification,
+  addressController.editAddress
+);
 
 //Cart controller routes
-userRoute.post("/addcart", cartController.addToCart);
-userRoute.post("/check-cart-status", cartController.checkCartStatus);
-userRoute.get("/cart/:id", cartController.fetchCart);
-userRoute.delete("/cart/:product_id/:user_id", cartController.removeCartItem);
-userRoute.patch("/cart/min/:product_id/:user_id", cartController.minusCartItem);
-userRoute.patch("/cart/add/:product_id/:user_id", cartController.plusCartItem);
-userRoute.put("/cart/remove-items", cartController.removeOrderItems);
+userRoute.post("/addcart", userAuth.jwtVerification, cartController.addToCart);
+userRoute.post(
+  "/check-cart-status",
+  userAuth.jwtVerification,
+  cartController.checkCartStatus
+);
+userRoute.get("/cart/:id", userAuth.jwtVerification, cartController.fetchCart);
+userRoute.delete(
+  "/cart/:product_id/:user_id",
+  userAuth.jwtVerification,
+  cartController.removeCartItem
+);
+userRoute.patch(
+  "/cart/min/:product_id/:user_id",
+  userAuth.jwtVerification,
+  cartController.minusCartItem
+);
+userRoute.patch(
+  "/cart/add/:product_id/:user_id",
+  userAuth.jwtVerification,
+  cartController.plusCartItem
+);
+userRoute.put(
+  "/cart/remove-items",
+  userAuth.jwtVerification,
+  cartController.removeOrderItems
+);
 
 //Order controller routes
-userRoute.post("/order", orderController.addOrder);
-userRoute.get("/fetchorders/:userId", orderController.fetchOrders);
-userRoute.get("/fetchorder/:order_id", orderController.fetchOrder);
-userRoute.patch("/order/cancel", orderController.orderCancel);
-userRoute.post("/return/request", orderController.returnRequest);
-userRoute.put("/order-success/:orderId", orderController.retryPayment);
-userRoute.get("/invoice/:orderId", orderController.generateInvoice);
+userRoute.post("/order", userAuth.jwtVerification, orderController.addOrder);
+userRoute.get(
+  "/fetchorders/:userId",
+
+  orderController.fetchOrders
+);
+userRoute.get(
+  "/fetchorder/:order_id",
+
+  orderController.fetchOrder
+);
+userRoute.patch(
+  "/order/cancel",
+  userAuth.jwtVerification,
+  orderController.orderCancel
+);
+userRoute.post(
+  "/return/request",
+  userAuth.jwtVerification,
+  orderController.returnRequest
+);
+userRoute.put(
+  "/order-success/:orderId",
+  userAuth.jwtVerification,
+  orderController.retryPayment
+);
+userRoute.get(
+  "/invoice/:orderId",
+  userAuth.jwtVerification,
+  orderController.generateInvoice
+);
+
+//Payment Controller routes
+
+userRoute.post(
+  "/create-order",
+  userAuth.jwtVerification,
+  paymentController.createOrder
+);
 
 //Review controller routes
-userRoute.post("/product/review", reviewController.addReview);
+userRoute.post(
+  "/product/review",
+  userAuth.jwtVerification,
+  reviewController.addReview
+);
 userRoute.get("/fetchreview/:productId", reviewController.fetchReview);
 userRoute.get(
   "/average-rating/:productId",
@@ -96,26 +177,52 @@ userRoute.get(
 userRoute.get("/category", categoryController.fetchCategories);
 
 //Wishlist controller routes
-userRoute.post("/wishlist", wishlistController.addTOWishlist);
-userRoute.get("/wishlist/:user_id", wishlistController.fetchWishlist);
+userRoute.post(
+  "/wishlist",
+  userAuth.jwtVerification,
+  wishlistController.addTOWishlist
+);
+userRoute.get(
+  "/wishlist/:user_id",
+  userAuth.jwtVerification,
+  wishlistController.fetchWishlist
+);
 userRoute.get(
   "/wishlist/:product_id/:user_id",
+
   wishlistController.checkIsExistOnWishlist
 );
 userRoute.delete(
   "/wishlist/:product_id/:user_id",
+  userAuth.jwtVerification,
   wishlistController.removeFromWishlist
 );
 
 //Wallet controller routes
-userRoute.post("/wallet/add-money", walletController.addMoneytoWallet);
-userRoute.get("/wallet", walletController.fetchWallet);
-userRoute.post("/wallet/deduct", walletController.deductMoneyFromWallet);
+userRoute.post(
+  "/wallet/add-money",
+  userAuth.jwtVerification,
+  walletController.addMoneytoWallet
+);
+userRoute.get(
+  "/wallet",
+  userAuth.jwtVerification,
+  walletController.fetchWallet
+);
+userRoute.post(
+  "/wallet/deduct",
+  userAuth.jwtVerification,
+  walletController.deductMoneyFromWallet
+);
 
 //offer constroller route
 userRoute.get("/offer", offerController.fetchBoldOffer);
 
 //coupon Controller routes
 userRoute.get("/coupon", couponController.fetchCouponDetails);
-userRoute.patch("/coupon", couponController.updateCoupon);
+userRoute.patch(
+  "/coupon",
+  userAuth.jwtVerification,
+  couponController.updateCoupon
+);
 module.exports = userRoute;

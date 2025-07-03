@@ -22,7 +22,7 @@ app.get("/", (req, res) => {
   res.send("Welcome to pocketmart.store API!");
 });
 
-const MONGO_URI = process.env.DATABASE_ORGIN;
+const MONGO_URI = process.env.DATABASE_URL;
 // Connect to MongoDB
 mongoose
   .connect(MONGO_URI)
