@@ -13,7 +13,7 @@ const wishlistController = require("../Controllers/User/wishlistController");
 const walletController = require("../Controllers/User/walletController");
 const offerController = require("../Controllers/User/offerController");
 const couponController = require("../Controllers/User/couponController");
-const paymentController = require("../Controllers/User/paymentController");
+
 // Rate limiter to prevent abuse
 const resetPasswordLimiter = rateLimit({
   windowMs: 1 * 60 * 1000, // 1 minute
@@ -151,14 +151,6 @@ userRoute.get(
   "/invoice/:orderId",
   userAuth.jwtVerification,
   orderController.generateInvoice
-);
-
-//Payment Controller routes
-
-userRoute.post(
-  "/create-order",
-  userAuth.jwtVerification,
-  paymentController.createOrder
 );
 
 //Review controller routes
